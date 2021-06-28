@@ -3,12 +3,11 @@ const { Model, DataTypes } = require('sequelize');
 module.exports = (sequelize) => {
   class Course extends Model {}
   Course.init({
-    // Set custom primary key column, though sequelize will add automatically if not specified
-    // id: {
-    //   type: DataTypes.INTEGER,
-    //   primaryKey: true,
-    //   autoIncrement: true,
-    // },
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
     title: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -31,14 +30,10 @@ module.exports = (sequelize) => {
     materialsNeeded: {
       type: DataTypes.STRING,
     },
-  },
-  { 
-    timestamps: false,
-    sequelize,
-  });
+  }, { sequelize });
 
   Course.associate = (models) => {
-    Course.belongsTo(models.User);
+    Course.hasOne(models.User);
   };
 
   return Course;

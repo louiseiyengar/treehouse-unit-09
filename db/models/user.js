@@ -3,12 +3,11 @@ const { Model, DataTypes } = require('sequelize');
 module.exports = (sequelize) => {
   class User extends Model {}
   User.init({
-    // Set custom primary key column, though sequelize will add automatically if not specified
-    // id: {
-    //   type: DataTypes.INTEGER,
-    //   primaryKey: true,
-    //   autoIncrement: true,
-    // },
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
     firstName: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -49,10 +48,7 @@ module.exports = (sequelize) => {
         notNull: { msg: "Please provide a value for 'password'"}
       }
     }
-  }, { 
-    timestamps: false,
-    sequelize,
-  });
+  }, { sequelize });
 
   User.associate = (models) => {
     User.hasMany(models.Course);

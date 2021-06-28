@@ -6,6 +6,7 @@ const sequelize = new Sequelize(
   }
 );
 
+
 const db = {
   sequelize,
   Sequelize,
