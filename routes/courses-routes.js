@@ -5,6 +5,8 @@ const { sequelize } = require('../db');
 const db = require('../db');
 const { Course, User } = db.models;
 
+const bodyParser = require('body-parser').json();
+
 function asyncHandler(cb){
   return async (req, res, next)=>{
     try {
@@ -15,26 +17,45 @@ function asyncHandler(cb){
   };
 }
 
-router.get('/', asyncHandler(async (req, res)=> {
-  const courses = await Course.findAll();
+router.get('/', asyncHandler(async(req, res) => {
+  const courses = await Course.findAll({ include: User });
   courseList = courses.map(course=>course.toJSON());
   res.status(200).json(courseList);
 }));
 
-router.get('/:id', (req, res)=>{
-  res.status(200).json({list: "Course List"});
-});
+router.get('/:id', asyncHandler(async(req, res) => {
+  const id = req.params.id;
+  const course = await Course.findByPk(id, { include: User });
+  res.status(200).json(course);
+}));
 
-router.post('/', (req, res) => {
-  res.status(201).location('/2').end();
-});
+router.post('/', bodyParser, asyncHandler(async (req, res) => {
+  const newRecord = await Course.create({
+    title: req.body.title,
+    description: req.body.description,
+    userId: req.body.userId
+  });
+  res.status(201).location('/' + newRecord.toJSON().id).end();
+}));
 
-router.put('/:id', (req, res) => {
+router.put('/:id', bodyParser, asyncHandler(async (req, res) => {
+  const id = req.params.id
+  await Course.update(req.body, {
+    where: {
+      id: id
+    }
+  })
   res.status(204).end();
-})
+}));
 
-router.delete('/:id', (req, res) => {
+router.delete('/:id', asyncHandler(async (req, res) => {
+  const id = req.params.id;
+  await Course.destroy({
+    where: {
+      id: id
+    }
+  });
   res.status(204).end();
-})
+}));
 
 module.exports = router;
