@@ -12,6 +12,13 @@ function asyncHandler(cb){
     try {
       await cb(req,res, next);
     } catch(err){
+      if (err.name === 'SequelizeValidationError') {
+        err.status = 400;
+        const errorsArray = err.errors.map(validationError => validationError.message.includes('Course.userId') ? 
+          "Please provide a value for 'userId'" 
+          : validationError.message)
+        err.message = errorsArray;
+      } 
       next(err);
     }
   };
@@ -33,7 +40,9 @@ router.post('/', bodyParser, asyncHandler(async (req, res) => {
   const newRecord = await Course.create({
     title: req.body.title,
     description: req.body.description,
-    userId: req.body.userId
+    estimatedTime: req.body.estimatedTime,
+    materialsNeeded: req.body.materialsNeeded,
+    userId: req.body.userId,
   });
   res.status(201).location('/' + newRecord.toJSON().id).end();
 }));

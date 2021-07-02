@@ -39,13 +39,9 @@ app.use((req, res) => {
 // connect to db and test connection
 (async () => {
   //await db.sequelize.sync();  //sync all models (tables) to database
-  console.log('test')
   try {
       await sequelize.authenticate();
       console.log('Successful database connection');
-
-      // console.log('Synchronizing the models with the database...');
-      // await sequelize.sync({force: true});
   } catch (err) {
       err.message = 'There was an error connecting to the database';
       err.status = 500;
@@ -61,7 +57,7 @@ app.use((err, req, res, next) => {
 
   res.status(err.status || 500).json({
     message: err.message,
-    error: {},
+    //error: {},
   });
 });
 
