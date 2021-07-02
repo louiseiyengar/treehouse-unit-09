@@ -6,23 +6,9 @@ const db = require('../db');
 const { Course, User } = db.models;
 
 const bodyParser = require('body-parser').json();
+const auth = require('basic-auth');
 
-function asyncHandler(cb){
-  return async (req, res, next)=>{
-    try {
-      await cb(req,res, next);
-    } catch(err){
-      if (err.name === 'SequelizeValidationError') {
-        err.status = 400;
-        const errorsArray = err.errors.map(validationError => validationError.message.includes('Course.userId') ? 
-          "Please provide a value for 'userId'" 
-          : validationError.message)
-        err.message = errorsArray;
-      } 
-      next(err);
-    }
-  };
-}
+const { authenticatedUser, asyncHandler } = require('../helper');
 
 router.get('/', asyncHandler(async(req, res) => {
   const courses = await Course.findAll({ include: User });
@@ -37,6 +23,7 @@ router.get('/:id', asyncHandler(async(req, res) => {
 }));
 
 router.post('/', bodyParser, asyncHandler(async (req, res) => {
+  await authenticatedUser(auth(req));
   const newRecord = await Course.create({
     title: req.body.title,
     description: req.body.description,
@@ -48,6 +35,7 @@ router.post('/', bodyParser, asyncHandler(async (req, res) => {
 }));
 
 router.put('/:id', bodyParser, asyncHandler(async (req, res) => {
+  await authenticatedUser(auth(req));
   const id = req.params.id
   await Course.update(req.body, {
     where: {
@@ -58,6 +46,7 @@ router.put('/:id', bodyParser, asyncHandler(async (req, res) => {
 }));
 
 router.delete('/:id', asyncHandler(async (req, res) => {
+  await authenticatedUser(auth(req));
   const id = req.params.id;
   await Course.destroy({
     where: {

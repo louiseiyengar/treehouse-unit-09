@@ -4,7 +4,6 @@
 const express = require('express');
 const morgan = require('morgan');
 const { sequelize, models } = require('./db');
-//const { User, Course } = models;
 
 const usersRoutes = require('./routes/users-routes');
 const coursesRoutes = require('./routes/courses-routes');
