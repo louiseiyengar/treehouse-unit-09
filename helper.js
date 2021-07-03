@@ -39,7 +39,7 @@ function asyncHandler(cb){
 
 /**
  * This function will will check the Basic-Auth header credentials passed into it.
- * It will cheeck that authorization credentials exist, that user exists, that the password is correct,
+ * It will check that authorization credentials exist, that user exists, that the password is correct,
  * and, if a user id is sent for a course, it will check that the user owns the course.
  * 
  * @param {object} credentials
@@ -81,7 +81,7 @@ const properCase = (string) => {
 };
 
 /**
- * Will check if an email a is already in the database.
+ * Will check if an email address is already in the database.
  * 
  * @param {string} email address
  * @return {boolean} 
@@ -96,7 +96,7 @@ async function isDuplicateEmail(email) {
 }
 
 /**
- * Will check if an email a is already in the database.
+ * Will search for a course with an id
  * 
  * @param {integer} id of course
  * @return {object} one course object 
