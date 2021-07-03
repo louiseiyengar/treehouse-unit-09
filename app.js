@@ -17,7 +17,7 @@ const app = express();
 // setup morgan which gives us http request logging
 app.use(morgan('dev'));
 
-// TODO setup your api routes here
+// api routes
 app.use('/api/users', usersRoutes);
 app.use('/api/courses', coursesRoutes)
 
@@ -37,6 +37,7 @@ app.use((req, res) => {
 
 // connect to db and test connection
 (async () => {
+  //since we set up and seed the database before this runs, I don't think we need to sync.
   //await db.sequelize.sync();  //sync all models (tables) to database
   try {
       await sequelize.authenticate();
