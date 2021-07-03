@@ -2,20 +2,25 @@ const bcryptjs = require('bcryptjs');
 const salt = bcryptjs.genSaltSync(10);
 
 const db = require('./db');
-const { User } = db.models;
+const { User, Course } = db.models;
 
-async function authenticatedUser(credentials) {
+async function authenticatedUser(credentials, courseUserId=null) {
   if (credentials) {
     const user = await User.findOne({ where: { emailAddress: credentials.name } });
     if (user) {
       const authenticated = bcryptjs.compareSync(credentials.pass, user.password);
       if (authenticated) {
+        if (courseUserId) {
+          if (user.id !== courseUserId) {
+            throw new Error('Authorization Error - Forbidden: This is not a course you own');
+          }
+        }
         return user;
       } else {
         throw new Error('Authorization Error: Password incorrect');
       }
     } else {
-      throw new Error("Authentication Error: No user found with email address sent");
+      throw new Error("Authorization Error: No user found with email address sent");
     }
   } else {
     throw new Error("Authorization Error: No credentials sent")
@@ -40,7 +45,7 @@ function asyncHandler(cb){
         });
         err.message = errorsArray;
       } else if(err.message.includes("Authorization Error")) {
-        err.status = 401;
+        err.status = (err.message.includes("Forbidden")) ? 403 : 401;
       }
       next(err);
     }
@@ -59,9 +64,19 @@ async function isDuplicateEmail(email) {
   }
 }
 
+async function findCourse (courseId) {
+  const course = await Course.findByPk(courseId);
+  if (!course) {
+    throw new Error("No course was found with this id")
+  } else {
+    return course;
+  }
+}
+
 module.exports = {
   authenticatedUser,
   asyncHandler,
   properCase,
-  isDuplicateEmail
+  isDuplicateEmail,
+  findCourse
 }

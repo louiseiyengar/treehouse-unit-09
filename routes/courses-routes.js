@@ -8,7 +8,7 @@ const { Course, User } = db.models;
 const bodyParser = require('body-parser').json();
 const auth = require('basic-auth');
 
-const { authenticatedUser, asyncHandler } = require('../helper');
+const { authenticatedUser, asyncHandler, findCourse } = require('../helper');
 
 router.get('/', asyncHandler(async(req, res) => {
   const courses = await Course.findAll({ include: User });
@@ -35,24 +35,18 @@ router.post('/', bodyParser, asyncHandler(async (req, res) => {
 }));
 
 router.put('/:id', bodyParser, asyncHandler(async (req, res) => {
-  await authenticatedUser(auth(req));
-  const id = req.params.id
-  await Course.update(req.body, {
-    where: {
-      id: id
-    }
-  })
+  const id = req.params.id;
+  const course = await findCourse(id);
+  await authenticatedUser(auth(req), course.userId);
+  await course.update(req.body);
   res.status(204).end();
 }));
 
 router.delete('/:id', asyncHandler(async (req, res) => {
-  await authenticatedUser(auth(req));
   const id = req.params.id;
-  await Course.destroy({
-    where: {
-      id: id
-    }
-  });
+  const course = await findCourse(id);
+  await authenticatedUser(auth(req), course.userId);
+  await course.destroy();
   res.status(204).end();
 }));
 
