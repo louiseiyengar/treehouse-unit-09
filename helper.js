@@ -31,6 +31,8 @@ function asyncHandler(cb){
         err.message = errorsArray;
       } else if(err.message.includes("Authorization Error")) {
         err.status = (err.message.includes("Forbidden")) ? 403 : 401;
+      } else if(err.message.includes("No course found")) {
+        err.status = 404;
       }
       next(err);
     }

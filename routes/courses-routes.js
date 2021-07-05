@@ -16,7 +16,7 @@ const { authenticatedUser, asyncHandler, findCourse } = require('../helper');
 */
 router.get('/', asyncHandler(async(req, res) => {
 
-  //select all courses with certain fields displayed - course to show user associated it
+  //select all courses with certain fields displayed - course to show user associated with it
   const courses = await Course.findAll({ 
     attributes: ['id', 'title', 'description', 'estimatedTime', 'materialsNeeded'],
     include: {
@@ -40,7 +40,11 @@ router.get('/:id', asyncHandler(async(req, res) => {
       attributes: ['id', 'firstName', 'lastName', 'emailAddress'],
     }
   });
-  res.status(200).json(course);
+  if (course) {
+    res.status(200).json(course);
+  } else {
+    throw Error("No course found with this id")
+  }
 }));
 
 /*
@@ -50,7 +54,7 @@ router.post('/', bodyParser, asyncHandler(async (req, res) => {
   //authenticate user
   await authenticatedUser(auth(req));
 
-  //insert newe course in database
+  //insert new course in database
   const newRecord = await Course.create({
     title: req.body.title,
     description: req.body.description,
