@@ -1,15 +1,14 @@
 const express = require('express');
 const router = express.Router();
 
-const { sequelize } = require('../db');
+//const { sequelize } = require('../db');
 const db = require('../db');
 const { Course, User } = db.models;
 
 const bodyParser = require('body-parser').json();
-const auth = require('basic-auth');
 
-// custom helper functions
-const { authenticatedUser, asyncHandler, findCourse } = require('../helper');
+// route middleware functions and async handler
+const { authenticateUser, checkUserOwnsCourse, asyncHandler } = require('../route_middleware');
 
 /*
   get all courses with users
@@ -43,17 +42,14 @@ router.get('/:id', asyncHandler(async(req, res) => {
   if (course) {
     res.status(200).json(course);
   } else {
-    throw Error("No course found with this id")
+    throw new Error("No Course: course not found at this address")
   }
 }));
 
 /*
   allow any authenticated user to create a new course
 */
-router.post('/', bodyParser, asyncHandler(async (req, res) => {
-  //authenticate user
-  await authenticatedUser(auth(req));
-
+router.post('/', bodyParser, authenticateUser, asyncHandler(async (req, res) => {
   //insert new course in database
   const newRecord = await Course.create({
     title: req.body.title,
@@ -68,18 +64,14 @@ router.post('/', bodyParser, asyncHandler(async (req, res) => {
 /*
   update a course if user is authenticated and owns the course.
 */
-router.put('/:id', bodyParser, asyncHandler(async (req, res) => {
-  const id = req.params.id;
+router.put('/:id', bodyParser, authenticateUser, checkUserOwnsCourse, asyncHandler(async (req, res) => {
   const updateCourse = req.body;
 
   //remove these fields if api call included them
   delete updateCourse.createdAt;
   delete updateCourse.updatedAt;
 
-  //determine if course exists and check that user is authenticated and owns the course
-  const course = await findCourse(id);
-  await authenticatedUser(auth(req), course.userId);
-
+  const course = req.course;
   await course.update(updateCourse);
   res.status(204).end();
 }));
@@ -87,13 +79,9 @@ router.put('/:id', bodyParser, asyncHandler(async (req, res) => {
 /*
   delete a course if user is authenticated and owns the course.
 */
-router.delete('/:id', asyncHandler(async (req, res) => {
-  const id = req.params.id;
-
-  //determine if couse exists and check that user is authenticated and owns the course
-  const course = await findCourse(id);
-  await authenticatedUser(auth(req), course.userId);
-
+router.delete('/:id', authenticateUser, checkUserOwnsCourse, asyncHandler(async (req, res) => {
+  //checkUserOwnsCourse middleware will put the course instance in the req object, if user owns the course
+  const course = req.course;
   await course.destroy();
   res.status(204).end();
 }));

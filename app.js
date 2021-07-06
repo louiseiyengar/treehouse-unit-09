@@ -36,16 +36,14 @@ app.use((req, res) => {
 });
 
 // connect to db and test connection
-(async () => {
-  //since we set up and seed the database before this runs, I don't think we need to sync.
-  //await db.sequelize.sync();  //sync all models (tables) to database
+(async () => {  
   try {
-      await sequelize.authenticate();
-      console.log('Successful database connection');
+    //await sequelize.sync({ force: true });
+    await sequelize.authenticate();
+    console.log('Successful database connection');
   } catch (err) {
       err.message = 'There was an error connecting to the database';
       err.status = 500;
-      next(err);
   }
 }) ();
 
@@ -57,7 +55,6 @@ app.use((err, req, res, next) => {
 
   res.status(err.status || 500).json({
     message: err.message,
-    //error: {},
   });
 });
 

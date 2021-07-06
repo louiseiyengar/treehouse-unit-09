@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const Sequelize = require('sequelize');
 const basename = path.basename(__filename);
+console.log(basename);
 
 console.info('Instantiating and configuring the Sequelize object instance...');
 

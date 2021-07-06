@@ -10,14 +10,14 @@ const { User } = db.models;
 const bodyParser = require('body-parser').json();
 
 // custom helper functions
-const { authenticatedUser, asyncHandler, properCase, isDuplicateEmail  } = require('../helper');
+const { authenticateUser, asyncHandler  } = require('../route_middleware');
 
 /*
   get authenticated user
 */
-router.get('/', asyncHandler (async (req, res)=>{
-  //find authenticated user
-  const user = await authenticatedUser(auth(req));
+router.get('/', authenticateUser, asyncHandler (async (req, res)=>{
+  //authenticateUser middleware will put authenticated user instance in req object
+  const user = req.user;
 
   //remove these key:values when returning user json
   delete user.dataValues.password;
@@ -31,13 +31,18 @@ router.get('/', asyncHandler (async (req, res)=>{
   create new user
 */
 router.post('/', bodyParser, asyncHandler(async (req, res) => {
+
+  //function to format string with first letter uppercase, the rest to be lovercase
+  const properCase = (string) => {
+    return (string && string.length > 1) ? string[0].toUpperCase() + string.slice(1).toLowerCase() : null;
+  };
+
   const user = req.body;
 
   //remove these fields if api post included them
   delete user.createdAt;
   delete user.updatedAt;
 
-  //for names: ensure first letter is uppercase, rest is lowercase.
   user.firstName = properCase(user.firstName);
   user.lastName = properCase(user.lastName);
 
@@ -45,9 +50,6 @@ router.post('/', bodyParser, asyncHandler(async (req, res) => {
   user.password = (user.password && user.password.length >= 4) ? 
     user.password = bcryptjs.hashSync(user.password, salt)
     : null;
-
-  //check if email is already in database
-  (user.emailAddress) ? await isDuplicateEmail(user.emailAddress) : null; 
 
   await User.create(user);
   res.status(201).location('/').end();
