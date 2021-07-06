@@ -42,8 +42,8 @@ function asyncHandler(cb){
 }
 
 /**
- * This middleware function will check if the authorization data sent in the request header.  If 
- * user can be authenticated, the user instanct will be added to the req object.
+ * This middleware function will check if a user can be authenticated by the authorize data sent in 
+ * the request header.  If user can be authenticated, the user instance will be added to the req object.
  * 
  * @param {object} req
  * @param {object} res
@@ -78,13 +78,13 @@ async function authenticateUser( req, res, next) {
 }
 
 /**
- * This middleware function will check if the authorization data sent in the request header.  If 
- * user can be authenticated, the user instanct will be added to the req object.
+ * This middleware function checks that users own the courses they are attempting to 
+ * modify or delete.
  * 
  * @param {object} req
  * @param {object} res
  * @param {function} next 
- * @return If user owns course, course instance will be added to req object.
+ * @return If user owns course, course data will be added to req object.
  * If there is an error, the error will go into the global error handler.
  * */
 async function checkUserOwnsCourse( req, res, next) {
@@ -93,6 +93,7 @@ async function checkUserOwnsCourse( req, res, next) {
     if (course.userId !== req.user.id) {
       throw new Error("Forbidden: You are not allowed to edit this course")
     }
+    //course added to req object
     req.course = course;
   } catch(err) {
     err.status = 403;
@@ -102,7 +103,7 @@ async function checkUserOwnsCourse( req, res, next) {
 }
 
 /**
- * Helper function: Will search for a course with an id
+ * Helper function: search for a course with an id
  * 
  * @param {integer} id of course
  * @return {object} one course object 

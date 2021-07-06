@@ -38,7 +38,7 @@ app.use((req, res) => {
 // connect to db and test connection
 (async () => {  
   try {
-    //await sequelize.sync({ force: true });
+    //await sequelize.sync();
     await sequelize.authenticate();
     console.log('Successful database connection');
   } catch (err) {
