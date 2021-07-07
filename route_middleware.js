@@ -31,8 +31,6 @@ function asyncHandler(cb){
           } 
         });
         err.message = errorsArray;
-      } else if(err.message.includes("Authorization Error")) {
-          err.status = (err.message.includes("Forbidden")) ? 403 : 40
       } else if(err.message.includes("No Course")) {
           err.status = 404;
       }
@@ -89,37 +87,23 @@ async function authenticateUser( req, res, next) {
  * */
 async function checkUserOwnsCourse( req, res, next) {
   try {
-    const course = await findCourse(req.params.id);
-    if (course.userId !== req.user.id) {
+    const course = await Course.findByPk(req.params.id);
+    if (!course) {
+      throw new Error("No Course: course not found at this address");
+    } else if (course.userId !== req.user.id) {
       throw new Error("Forbidden: You are not allowed to edit this course")
     }
     //course added to req object
     req.course = course;
   } catch(err) {
-    err.status = 403;
+    err.status = (err.message.includes("No Course")) ? 404 : 401;
     next(err);
   }
   next();
 }
 
-/**
- * Helper function: search for a course with an id
- * 
- * @param {integer} id of course
- * @return {object} one course object 
-*/
-async function findCourse (courseId) {
-  const course = await Course.findByPk(courseId);
-  if (!course) {
-    throw new Error("No Course: course not found at this address");
-  } else {
-    return course;
-  }
-}
-
 module.exports = {
   authenticateUser,
   checkUserOwnsCourse,
-  asyncHandler,
-  findCourse
+  asyncHandler
 }

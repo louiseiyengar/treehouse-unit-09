@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const auth = require('basic-auth');
 const bcryptjs = require('bcryptjs');
 const salt = bcryptjs.genSaltSync(10);
 
