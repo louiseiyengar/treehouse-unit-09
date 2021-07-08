@@ -38,7 +38,7 @@ app.use((req, res) => {
 // connect to db and test connection
 (async () => {  
   try {
-    //await sequelize.sync();
+    await sequelize.sync();
     await sequelize.authenticate();
     console.log('Successful database connection');
   } catch (err) {
@@ -52,7 +52,6 @@ app.use((err, req, res, next) => {
   if (enableGlobalErrorLogging) {
     console.error(`Global error handler: ${JSON.stringify(err.stack)}`);
   }
-
   res.status(err.status || 500).json({
     message: err.message,
   });

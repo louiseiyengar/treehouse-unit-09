@@ -17,26 +17,36 @@ function asyncHandler(cb){
     try {
       await cb(req,res, next);
     } catch(err){
-      err.status = 400;
       if (err.name === 'SequelizeUniqueConstraintError') {
         err.message = "A user with this email address already exists"
+        err.status = 409;
       } else if (err.name === 'SequelizeValidationError') {
-        const errorsArray = err.errors.map(validationError => {
-          if (validationError.validatorKey === 'isEmail') {
-            return "Please provide a properly formatted email address";
-          } else if (validationError.message.includes('Course.userId')) {
-            return "Please provide a value for 'userId";
-          } else {
-            return validationError.message
-          } 
-        });
-        err.message = errorsArray;
+        err.status = 400;
+        err.message = validationErrors(err);
       } else if(err.message.includes("No Course")) {
           err.status = 404;
       }
       next(err);
     }
   };
+}
+
+/**
+ * Helper function to create an array of all validation error messages
+ * 
+ * @param {object} error object
+ * @return {array} Array of all validation messages.
+*/
+function validationErrors(err) {
+  return err.errors.map(validationError => {
+    if (validationError.validatorKey === 'isEmail') {
+      return "Please provide a properly formatted email address";
+    } else if (validationError.message.includes('Course.userId')) {
+      return "Please provide a value for 'userId";
+    } else {
+      return validationError.message
+    } 
+  });
 }
 
 /**
@@ -60,13 +70,13 @@ async function authenticateUser( req, res, next) {
           //if user authenticated, user instance will be put in req object.
           req.user = user;
         } else {
-          throw new Error('Authorization Error: Password incorrect');
+          throw new Error('Authentication Error: Password incorrect');
         }
       } else {
-        throw new Error("Authorization Error: No user found with email address sent");
+        throw new Error("Authentication Error: No user found with email address sent");
       }
     } else {
-      throw new Error("Authorization Error: No credentials sent")
+      throw new Error("Authentication Error: No credentials sent")
     }
   } catch (err) {
     err.status = 401
@@ -82,7 +92,7 @@ async function authenticateUser( req, res, next) {
  * @param {object} req
  * @param {object} res
  * @param {function} next 
- * @return If user owns course, course data will be added to req object.
+ * @return If user owns course, course instance will be added to req object.
  * If there is an error, the error will go into the global error handler.
  * */
 async function checkUserOwnsCourse( req, res, next) {
@@ -91,12 +101,12 @@ async function checkUserOwnsCourse( req, res, next) {
     if (!course) {
       throw new Error("No Course: course not found at this address");
     } else if (course.userId !== req.user.id) {
-      throw new Error("Forbidden: You are not allowed to edit this course")
+      throw new Error("Authorization Error: You are not allowed to edit this course")
     }
-    //course added to req object
+    //course instance added to req object
     req.course = course;
   } catch(err) {
-    err.status = (err.message.includes("No Course")) ? 404 : 401;
+    err.status = (err.message.includes("Authorization Error")) ? 403 : 404;
     next(err);
   }
   next();

@@ -80,7 +80,7 @@ router.put('/:id', bodyParser, authenticateUser, checkUserOwnsCourse, asyncHandl
   delete a course if user is authenticated and owns the course.
 */
 router.delete('/:id', authenticateUser, checkUserOwnsCourse, asyncHandler(async (req, res) => {
-  //checkUserOwnsCourse middleware will put the course object in the req object, if user owns the course
+  //checkUserOwnsCourse middleware will put the course instance in the req object, if user owns the course
   const course = req.course;
   await course.destroy();
   res.status(204).end();

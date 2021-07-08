@@ -15,7 +15,7 @@ const { authenticateUser, asyncHandler  } = require('../route_middleware');
   get authenticated user
 */
 router.get('/', authenticateUser, asyncHandler (async (req, res)=>{
-  //authenticateUser middleware will put authenticated user object in req object
+  //authenticateUser middleware will put authenticated user instance in req object
   const user = req.user;
 
   //remove these key:values when returning user json
