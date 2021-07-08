@@ -101,7 +101,7 @@ async function checkUserOwnsCourse( req, res, next) {
     if (!course) {
       throw new Error("No Course: course not found at this address");
     } else if (course.userId !== req.user.id) {
-      throw new Error("Authorization Error: You are not allowed to edit this course")
+      throw new Error("Authorization Error: You are not allowed to edit or delete this course")
     }
     //course instance added to req object
     req.course = course;
