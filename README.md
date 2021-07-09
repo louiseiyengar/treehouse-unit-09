@@ -20,7 +20,7 @@ PUT api/courses/:id - updates a course (authentication and authorization needed 
 
 DELETE api/courses/:id - deletes a course (authentication and authorization needed - a user cannot delete a course unless authorization is sent for the user who owns the course.
 
-There will be error messages and status codes as appropriate.
+There will be error messages and error status codes as appropriate.
 
 ======= Instuctions to view project locally =========
 
