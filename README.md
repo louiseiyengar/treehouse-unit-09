@@ -1,38 +1,27 @@
+# FSJS Project 9 - REST API
 
-# Full Stack JavaScript Techdegree v2 - REST API Project
+For this project, I created a REST API of Users and Courses using a SQLite database, the Sequelize ORM, and the Express web application framework.  
 
-## Overview of the Provided Project Files
+The server is listening on port 5000. The API uses Basic Auth authentication, requiring a user to put a username and password in the header of the API request.  Not all routes require authentication.  Note that a User can own many courses, and a course is owned by one user.
 
-We've supplied the following files for you to use: 
+The Routes for this API are as follows:
+GET /api/users - returns the currently authenticated user (you will need to be a current user and send Basic Auth authentication (username and Password).
+POST api/users - creates a user (no authentication needed).
+GET api/courses - returns a list of courses and information about the user that owns the course. (no authentication needed).
+GET api/couses/:id - returns the course with the id sent in the route (no authentication needed)
+POST api/courses - creates a course (no authentication needed)
+PUT api/courses/:id - updates a course (authentication and authorization needed - a user cannot edit a course unless authorization is sent for the user who owns the course.
+DELETE api/courses/:id - deletes a course (authentication and authorization needed - a user cannot delete a course unless authorization is sent for the user who owns the course.
 
-* The `seed` folder contains a starting set of data for your database in the form of a JSON file (`data.json`) and a collection of files (`context.js`, `database.js`, and `index.js`) that can be used to create your app's database and populate it with data (we'll explain how to do that below).
-* We've included a `.gitignore` file to ensure that the `node_modules` folder doesn't get pushed to your GitHub repo.
-* The `app.js` file configures Express to serve a simple REST API. We've also configured the `morgan` npm package to log HTTP requests/responses to the console. You'll update this file with the routes for the API. You'll update this file with the routes for the API.
-* The `nodemon.js` file configures the nodemon Node.js module, which we are using to run your REST API.
-* The `package.json` file (and the associated `package-lock.json` file) contain the project's npm configuration, which includes the project's dependencies.
-* The `RESTAPI.postman_collection.json` file is a collection of Postman requests that you can use to test and explore your REST API.
+There will be error messages and status codes as appropriate.
 
-## Getting Started
+======= Instuctions to view project locally =========
 
-To get up and running with this project, run the following commands from the root of the folder that contains this README file.
+1) To run this project locally, you must have node.js and npm installed.
+2) Download or clone the project from this repo.
+3) The project uses the Express web application framework It also uses the SQLite database and the Sequelize ORM.  You will install these and all other dependencies by running:
+**npm install**
+4) run **npm run seed** to create and seed a SQLite database.
+5) Run **npm start** to start the server and application. The last message you will see should be: 'Successful database connection.
+5) Use Postman or any other API development tool.  Enter URI's in this format: GET localhost:5000/api/courses
 
-First, install the project's dependencies using `npm`.
-
-```
-npm install
-
-```
-
-Second, seed the SQLite database.
-
-```
-npm run seed
-```
-
-And lastly, start the application.
-
-```
-npm start
-```
-
-To test the Express server, browse to the URL [http://localhost:5000/](http://localhost:5000/).
