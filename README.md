@@ -14,9 +14,9 @@ POST api/users - creates a user (no authentication needed).
 
 GET api/courses - returns a list of courses and information about the user that owns the course. (no authentication needed).
 
-GET api/courses/:id - returns the course with the id specified in the route and, and information about the user that owns the course.
+GET api/courses/:id - returns the course with the id specified in the route and, and information about the user that owns the course (no authentication needed).
 
-POST api/courses - creates a course (no authentication needed)
+POST api/courses - allows an authenticated user to create a course (authentication needed).
 
 PUT api/courses/:id - updates a course (authentication and authorization needed - a user cannot edit a course unless authorization is sent for the user who owns the course.
 
