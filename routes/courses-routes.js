@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 
-//const { sequelize } = require('../db');
 const db = require('../db');
 const { Course, User } = db.models;
 
