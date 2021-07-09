@@ -5,6 +5,7 @@ For this project, I created a REST API of Users and Courses using a SQLite datab
 The server is listening on port 5000. The API uses Basic Auth authentication, requiring a user to put a username and password in the header of the API request.  Not all routes require authentication.  Note that a User can own many courses, and a course is owned by one user.
 
 The Routes for this API are as follows:
+
 GET /api/users - returns the currently authenticated user (you will need to be a current user and send Basic Auth authentication (username and Password).
 
 POST api/users - creates a user (no authentication needed).
