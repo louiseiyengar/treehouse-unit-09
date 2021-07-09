@@ -6,11 +6,15 @@ The server is listening on port 5000. The API uses Basic Auth authentication, re
 
 The Routes for this API are as follows:
 GET /api/users - returns the currently authenticated user (you will need to be a current user and send Basic Auth authentication (username and Password).
+
 POST api/users - creates a user (no authentication needed).
+
 GET api/courses - returns a list of courses and information about the user that owns the course. (no authentication needed).
-GET api/couses/:id - returns the course with the id sent in the route (no authentication needed)
+
 POST api/courses - creates a course (no authentication needed)
+
 PUT api/courses/:id - updates a course (authentication and authorization needed - a user cannot edit a course unless authorization is sent for the user who owns the course.
+
 DELETE api/courses/:id - deletes a course (authentication and authorization needed - a user cannot delete a course unless authorization is sent for the user who owns the course.
 
 There will be error messages and status codes as appropriate.
