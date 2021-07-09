@@ -30,5 +30,6 @@ There will be error messages and error status codes as appropriate.
 **npm install**
 4) run **npm run seed** to create and seed a SQLite database.
 5) Run **npm start** to start the server and application. The last message you will see should be: 'Successful database connection.
-5) Use Postman or any other API development tool.  Enter URI's in this format: GET localhost:5000/api/courses
+5) Use Postman or any other API development tool.  Enter URI's in this format: GET localhost:5000/api/courses.
+Note: you can import the file RESTAPI.postman_collection.json into Postman to get a collections of URI's that will allow you to test routes.
 
