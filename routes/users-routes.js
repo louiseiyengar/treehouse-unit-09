@@ -19,9 +19,9 @@ router.get('/', authenticateUser, asyncHandler (async (req, res)=>{
   const user = req.user;
 
   //remove these key:values when returning user json
-  delete user.dataValues.password;
-  delete user.dataValues.createdAt;
-  delete user.dataValues.updatedAt;
+  delete user.password;
+  delete user.createdAt;
+  delete user.updatedAt;
 
   res.status(200).json(user);
 }));

@@ -20,7 +20,7 @@ router.get('/', asyncHandler(async(req, res) => {
     include: {
       model: User,
       attributes: ['id', 'firstName', 'lastName', 'emailAddress'],
-    }        
+    }
   });
   const courseList = courses.map(course=>course.toJSON());
   res.status(200).json(courseList);
@@ -55,9 +55,10 @@ router.post('/', bodyParser, authenticateUser, asyncHandler(async (req, res) => 
     description: req.body.description,
     estimatedTime: req.body.estimatedTime,
     materialsNeeded: req.body.materialsNeeded,
-    userId: req.body.userId,
+    userId: req.user.id,      //this is the authenticated user's id
   });
-  res.status(201).location('/' + newRecord.toJSON().id).end();
+
+  res.status(201).location('/api/courses/' + newRecord.id).end();
 }));
 
 /*

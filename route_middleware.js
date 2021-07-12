@@ -18,8 +18,8 @@ function asyncHandler(cb){
       await cb(req,res, next);
     } catch(err){
       if (err.name === 'SequelizeUniqueConstraintError') {
+        err.status = 400;
         err.message = "A user with this email address already exists"
-        err.status = 409;
       } else if (err.name === 'SequelizeValidationError') {
         err.status = 400;
         err.message = validationErrors(err);
@@ -32,7 +32,8 @@ function asyncHandler(cb){
 }
 
 /**
- * Helper function to create an array of all validation error messages
+ * Helper function to create an array of all validation error messages.
+ * Note that proper email format is checked by Sequelize's isEmail validation.
  * 
  * @param {object} error object
  * @return {array} Array of all validation messages.
@@ -40,9 +41,7 @@ function asyncHandler(cb){
 function validationErrors(err) {
   return err.errors.map(validationError => {
     if (validationError.validatorKey === 'isEmail') {
-      return "Please provide a properly formatted email address";
-    } else if (validationError.message.includes('Course.userId')) {
-      return "Please provide a value for 'userId";
+      return "Please provide a properly formatted email address for this user";
     } else {
       return validationError.message
     } 
@@ -50,25 +49,43 @@ function validationErrors(err) {
 }
 
 /**
+ * Helper function that uses a regular expression to test if an email is properly formatted.
+ * And no, I didn't come up with this regEx.  It was found in the under the JavaScript header at
+ * http://emailregex.com/
+ * 
+ * @param {object} error object
+ * @return {array} Array of all validation messages.
+*/
+function isValidEmail(emailAddress) {
+  const regEx = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+  return regEx.test(emailAddress.toLowerCase());
+}
+
+/**
  * This middleware function will check if a user can be authenticated by the authorize data sent in 
- * the request header.  If user can be authenticated, the user instance will be added to the req object.
+ * the request header.  If user can be authenticated, the user will be added to the req object in JSON format.
+ * 
+ * Note that the email format is tested by a RegEx in the isValidEmail helper function.
  * 
  * @param {object} req
  * @param {object} res
  * @param {function} next 
- * @return Will add user instance to req object.
+ * @return Will add user in JSON format will be added to req object.
  * If there is an error, the error will go into the global error handler.
 */
 async function authenticateUser( req, res, next) {
   try {
     credentials = auth(req);
     if (credentials) {
+      if (!isValidEmail(credentials.name)) {
+        throw new Error("Authentication Error - Username: Please provide your email address, properly formatted, as a username.");
+      }
       const user = await User.findOne({ where: { emailAddress: credentials.name } });
       if (user) {
         const authenticated = bcryptjs.compareSync(credentials.pass, user.password);
         if (authenticated) {
-          //if user authenticated, user instance will be put in req object.
-          req.user = user;
+          //if user authenticated, user in JSON format will be put in req object.
+          req.user = user.toJSON();
         } else {
           throw new Error('Authentication Error: Password incorrect');
         }
@@ -79,7 +96,7 @@ async function authenticateUser( req, res, next) {
       throw new Error("Authentication Error: No credentials sent")
     }
   } catch (err) {
-    err.status = 401
+    err.status = err.message.includes("Authentication Error - Username") ? 400 : 401;
     next(err);
   }
   next();
