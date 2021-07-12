@@ -70,6 +70,7 @@ router.put('/:id', bodyParser, authenticateUser, checkUserOwnsCourse, asyncHandl
   //remove these fields if api call included them
   delete updateCourse.createdAt;
   delete updateCourse.updatedAt;
+  delete updateCourse.userId;
 
   const course = req.course;
   await course.update(updateCourse);
