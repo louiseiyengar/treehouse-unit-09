@@ -17,8 +17,10 @@ GET api/courses - returns a list of courses and information about the user that 
 GET api/courses/:id - returns the course with the id specified in the route and, and information about the user that owns the course (no authentication needed).
 
 POST api/courses - allows an authenticated user to create a course (authentication needed).
+Please note: the course created by an authenticated user will always be owned by that user.  An authenticated user cannot create a course owned by another user.  If a user sends UserId as a key in the body of a this POST request, the UserID key:value pair will be ignored.
 
 PUT api/courses/:id - updates a course (authentication and authorization needed - a user cannot edit a course unless authorization is sent for the user who owns the course.
+Please note: the course owner cannot change the owner of the course.   If a user sends UserId as a key in the body of a this PUT request, the UserID key:value pair will be ignored.
 
 DELETE api/courses/:id - deletes a course (authentication and authorization needed - a user cannot delete a course unless authorization is sent for the user who owns the course.
 
